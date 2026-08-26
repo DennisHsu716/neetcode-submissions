@@ -1,0 +1,53 @@
+class TriesNode:
+    def __init__(self):
+        self.children = {}
+        self.end = False 
+        self.word = ""
+class Solution:
+    def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
+        self.root = TriesNode()
+        res = []
+
+        for word in words:
+            node = self.root
+            for i in word:
+                if i not in node.children:
+                    node.children[i] = TriesNode()
+                node = node.children[i]
+            node.end = True 
+            node.word = word
+        
+        row = len(board)
+        col = len(board[0])
+
+        def dfs(node:Optional[TriesNode], r, c):
+            nonlocal row, col, res
+            if r < 0 or r >= row or c < 0 or c >= col:
+                return False 
+            
+            ch = board[r][c]
+            if ch == "#":
+                return False
+            
+            if ch not in node.children:
+                return False 
+            node = node.children[ch]
+            board[r][c] = "#"
+
+            if node.end == True:
+                res.append(node.word)
+                node.end = False 
+
+            dfs(node, r + 1, c)
+            dfs(node, r - 1, c)
+            dfs(node, r, c + 1)
+            dfs(node, r, c - 1)
+
+            board[r][c] = ch
+        
+        for r in range(row):
+            for c in range(col):
+                dfs(self.root, r, c)
+        return res 
+         
+        
